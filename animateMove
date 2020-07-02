@@ -1,0 +1,36 @@
+/**
+ * @description 匀速运动封装：实现不限元素，不限距离，不限方向的横向运动
+ * @param element ele，要移动的元素
+ * @param number target，要移动的目标位置
+ * @param number [step] 每次移动的距离，默认35px
+ * @param number [time] 每次移动的时间，移动时间延迟，默认10ms
+ *
+ * */
+function animateMove(ele, target, step = 35, time = 15) {
+
+    clearInterval(ele.timer); //清除上一次的定时器
+
+    ele.timer = setInterval(function() {
+
+        let left = ele.offsetLeft; //获得盒子当前的定位位置
+        let toRight = target >= left ? true : false;
+        //首先判断对象和目标位置的方向，实际上就是获得他上一次的位置和当前位置的方向关系
+
+        left > target ? left -= step : left += step; // 如果对象在目标距离的左边就加步长，否则就减步长
+        ele.style.left = left + 'px';
+        // console.log(ele.style.left);
+
+        if (toRight) { //如果是往左走的时候，定位left已经大于目标位置的时候，就直接给他添加固定的目标位置
+            if (left > target) {
+                ele.style.left = target + 'px';
+                clearInterval(ele.timer);
+            }
+        } else {
+            if (left < target) {
+                ele.style.left = target + 'px';
+                clearInterval(ele.timer);
+            }
+        }
+
+    }, time);
+};
