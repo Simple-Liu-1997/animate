@@ -1,0 +1,23 @@
+function animateSlow(ele, target, direction = 'left', scale = 0.1, time = 10) {
+    clearInterval(ele.timer);
+
+    ele.timer = setInterval(function() {
+        // 首先先获得需要移动的方向，然后获得在该方向上的位置
+        console.log(1);
+
+        let current = parseInt(window.getComputedStyle(ele, null)[direction]); //null表示ele的伪元素
+        let step = target - current;
+
+        if (step > 0) {
+            step = Math.ceil((target - current) * scale);
+        } else {
+            step = Math.floor((target - current) * scale);
+        }
+
+        ele.style[direction] = current + step + 'px';
+        if (current == target) {
+            clearInterval(ele.timer);
+        }
+
+    }, time);
+}
