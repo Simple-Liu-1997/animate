@@ -1,0 +1,78 @@
+/**
+ * @description 缓速运动封装：实现不限元素，不限距离，任意属性动画效果
+ * @param element ele，要移动的元素
+ * @param object target，要移动的属性和距离的对象集合 eg:{left:800,top:400}
+ * @param function fn=''; 回调函数：当前定时器运行结束后，需要调用的回调函数
+ * @param number scale = 0.1，步长，每次移动10%
+ * @param number time = 10，移动时间延迟，默认10ms
+ *
+ * */
+function animateAll(ele, target, fn = '', scale = 0.1, time = 10) {
+    clearInterval(ele.timer);
+
+    ele.timer = setInterval(function() {
+        // 传入一个对象 然后遍历这个对象，将所有属性值和属性名拿出来
+        let isAllOk = true;
+
+        for (let key in target) {
+
+            let current = parseInt(window.getComputedStyle(ele, null)[key]);
+            let step = target[key] - current;
+
+            switch (key) {
+                case 'width':
+                case 'height':
+                case 'left':
+                case 'right':
+                case 'buttom':
+                case 'top':
+                case 'marginLeft':
+                case 'marginRight':
+                case 'marginTop':
+                case 'marginBottom':
+                case 'paddingLeft':
+                case 'paddingRight':
+                case 'paddingTop':
+                case 'paddingBottom':
+                case 'fontSize':
+                case 'border':
+                    step = step > 0 ? Math.ceil((target[key] - current) * scale) : Math.floor((target[key] - current) * scale);
+                    ele.style[key] = current + step + 'px';
+                    if (current != target[key]) {
+                        // 如果有一个数值不相同，开关关上，直到所有的属性值和目标距离相同的时候才不用关上
+                        isAllOk = false;
+                    }
+                    break;
+                case 'opacity':
+                    current = parseFloat(window.getComputedStyle(ele, null)[key]);
+                    // current *= 100;
+                    // console.log(current); //  50.000004
+                    current = parseInt(window.getComputedStyle(ele, null)[key] * 100);
+                    // target[key] *= 100;      //这是一个target的属性值
+                    console.log(current, target[key]); //100   0.5
+                    step = (target[key] * 100 - current) * scale;
+                    // console.log(target[key], step); //0.2  0
+                    // current /= 100;
+                    // step /= 100;
+                    console.log(current, step);
+
+                    ele.style[key] = (current + step) / 100;
+                    console.log(ele.style[key], target[key]);
+                    if (ele.style[key] * 100 != target[key] * 100) {
+                        // 如果有一个数值不相同，开关关上，直到所有的属性值和目标距离相同的时候才不用关上
+                        isAllOk = false;
+                    }
+                    break;
+                default:
+                    ele.style[key] = target[key];
+            }
+        }
+        // console.log(1);
+
+        if (isAllOk) {
+            clearInterval(ele.timer);
+            fn && fn(); //如果有这个参数，就将这个参数当函数调用
+        }
+
+    }, time);
+}
